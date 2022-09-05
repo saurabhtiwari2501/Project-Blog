@@ -5,14 +5,8 @@ const blogController=require("../Controllers/blogController")
 
 
 router.post("/authors", authorController.authors)
-
-
-
-
+router.post("/blogs", blogController.createBlog)
 
 module.exports = router;
-<<<<<<< HEAD
 
-=======
-// >>>>>>> 7859239187b5e77100fb047665030c3599f9fb2b
->>>>>>> 52844ad1f374387523adbe380719c32bf24f553e
+

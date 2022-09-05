@@ -1,34 +1,49 @@
-const { modelName } = require("../models/authorModel")
-
+const authorModel = require("../models/authorModel")
+const blogModel = require("../models/blogModel")
 
 // _____________________________POST BLOG__________________________
 
 
-const POSTBlog = async function (req,res) {
+const createBlog = async function (req, res) {
 
-  try { 
+  try {
     let data = req.body
-    let savedBlog = await modelName.create(data)
-    res.status(201).send({msg : savedBlog})
-}
-catch(err){
-    res.status(500).send(err.massage)
-}
+    let findAuthor = await authorModel.findById(data.authorId)
+
+    if (!data.authorId) {
+      return res.status(400).send({ msg: "Author_Id is Mandatory" })
+    }
+    else if (!findAuthor) {
+      return res.status(400).send({ msg: "Please enter valid Author Id" })
+    }
+
+    let savedBlog = await blogModel.create(data)
+    res.status(201).send({ msg: savedBlog })
+
+  }
+  catch (err) {
+    res.status(500).send({ status: false, Error: err.massage })
+  }
 }
 
 // ________________________________GET BLOG_________________________________
 
 
-const GETBlog = async function (req,res) {
-    
-   try{
-     let data = await modelName.find()
-    res.status(201).send({msg : data}) 
-}
-catch(err){
-    res.status(500).send(err.massage)
-}
+const GETBlog = async function (req, res) {
+
+  try {
+    let data = await blogModel.find()
+    res.status(201).send({ msg: data })
+  }
+  catch (err) {
+    res.status(500).send({ status: false, Error: err.massage })
+  }
 }
 
+const getBlogsWithAuthorDetails = async function (req, res) {
+  let specificBook = await bookModel.find().populate('authorId')
+  res.send({ data: specificBook })
 
-module.expost= {POSTBlog,GETBlog}
+}
+
+module.exports.createBlog = createBlog
