@@ -16,8 +16,6 @@ const AuthorSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        trim: true,
-        lowercase: true,
         unique: true,
         required: [true, 'Email address is required'],
         validate: [validateEmail, 'Please fill a valid email address'],
