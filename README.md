@@ -1,5 +1,4 @@
 # Project-Blogging-Site
-<<<<<<< HEAD
 # Plutonium
 
 Repository for backend cohort - Plutonium
@@ -17,7 +16,6 @@ Repository for backend cohort - Plutonium
 ```
 { title: {mandatory}, body: {mandatory}, authorId: {mandatory, refs to author model}, tags: {array of string}, category: {string, mandatory, examples: [technology, entertainment, life style, food, fashion]}, subcategory: {array of string, examples[technology-[web development, mobile development, AI, ML etc]] }, createdAt, updatedAt, deletedAt: {when the document is deleted}, isDeleted: {boolean, default: false}, publishedAt: {when the blog is published}, isPublished: {boolean, default: false}}
 ```
-<!-- new comment -->
 
 ### Author APIs /authors
 - Create an author - atleast 5 authors
@@ -107,10 +105,6 @@ Refer below sample
 }
 ```
 
-
-
-
-
 ## Collections
 ### Blogs
 ```yaml
@@ -141,6 +135,7 @@ Refer below sample
 #### Refer https://jsonplaceholder.typicode.com/guide/ for some fake blogs data.
 
 #### Note: Create a group database and use the same database in connection string by replacing `groupXDatabase
+<<<<<<< HEAD
 =======
 
 
@@ -152,3 +147,5 @@ mongodb+srv://project-1:DP5cPU2UQSOB14RT@cluster0.27uy03s.mongodb.net/group45Dat
 
 group45Database
 >>>>>>> 870ac52f37a61793b606b99c6e95b671feaa3c92
+=======
+>>>>>>> 4f7a3e6d3157f83e98e966e129d284b48ac8d584
