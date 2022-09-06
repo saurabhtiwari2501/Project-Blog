@@ -1,7 +1,5 @@
 const authorModel = require("../models/authorModel")
 
-
-
 const isValidreqbody = function (body) {
     return Object.keys(body).length > 0
 }
@@ -12,10 +10,8 @@ const isValid = function (value) {
     return true
 }
 
-
 const authors = async function (req, res) {
     let authorsData = req.body
-
 
     if (!isValidreqbody(authorsData)) {
         return res.status(400).send({ status: false, Msg: "please provide auther details" })
@@ -36,10 +32,10 @@ const authors = async function (req, res) {
     if (!title) {
         return res.status(400).send({status : false , msg : "title is required"})
     }
-
-    if (!(/^(Mr|Mrs|Miss)\.[A-Za-z]+$/.test(title))) {
-        return res.status(400).send({ status : false , msg : "title must be : Mr , Miss , Mrs"})
-    }                                     
+                                   
+    let validTitle = ['Mr', 'Mrs', 'Miss']; //validating the title
+    //checking if the title is valid
+    if(!validTitle.includes(authorsData.title)) return res.status(400).send({ status: false, msg: "Title should be one of Mr, Mrs, Miss" });
 
 // ______________________________Email ______________________________________________
 
@@ -52,7 +48,7 @@ const authors = async function (req, res) {
 
     let uniqueEmail = await authorModel.findOne({ email: email })
     if (uniqueEmail) {
-        return res.status(400).send({ status: false, msg: "email address is already resistred" })
+        return res.status(400).send({ status: false, msg: "email address is already registered" })
     }
 
     // ___________________________________password regex________________________________
@@ -67,8 +63,6 @@ const authors = async function (req, res) {
 
     let authorCreated = await authorModel.create(authorsData)
     res.send({ data: authorCreated })
-
-    
 
 }
 

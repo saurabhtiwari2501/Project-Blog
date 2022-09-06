@@ -3,10 +3,6 @@ const blogModel = require("../models/blogModel")
 
 // _____________________________POST BLOG__________________________
 
-<<<<<<< HEAD
-
-=======
->>>>>>> deab3bcf79f73adb84015507f1901c72ce3c7336
 const createBlog = async function (req, res) {
 
   try {
@@ -46,10 +42,6 @@ const GETBlog = async function (req, res) {
   }
   catch (err) {
     res.status(500).send({ status: false, Error: err.massage })
-<<<<<<< HEAD
-=======
-
->>>>>>> deab3bcf79f73adb84015507f1901c72ce3c7336
   }
 }
 
@@ -59,12 +51,5 @@ const getBlogsWithAuthorDetails = async function (req, res) {
 
 }
 
-<<<<<<< HEAD
-
-
 
 module.exports.createBlog = createBlog
-=======
-module.exports.createBlog = createBlog
-
->>>>>>> deab3bcf79f73adb84015507f1901c72ce3c7336
