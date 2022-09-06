@@ -5,6 +5,8 @@ const authors = async function (req, res) {
     let authorCreated = await authorModel.create(authorsData)
     res.send({ data: authorCreated })
 
+    
+
 }
 
 module.exports.authors = authors
