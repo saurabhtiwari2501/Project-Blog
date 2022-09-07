@@ -173,6 +173,7 @@ const deleteBlogByPathParams = async function (req, res) {
 
 // ___________________________DELETE USING QUERY PARAMS_________________________________________________
 
+
 const deletedBlogByQueryParam = async function (req, res) {
 
   let data = req.query;
@@ -181,22 +182,22 @@ const deletedBlogByQueryParam = async function (req, res) {
   if (!isValidreqbody(req.query)) {
     return res.status(400).send({ status: false, msg: "Data Is Not Passes In Query" })
   }
-  if (category)
+  
     if (!isValid(category)) {
       return res.status(400).send({ status: false, msg: "Please Enter valid Categary" })
     }
   if (!isValidObjectId(authorId)) {
     return res.status(400).send({ status: false, msg: "invalid author id" })
   }
-  if (tags)
+  
     if (!isValid(tags)) {
       return res.status(400).send({ status: false, msg: "Please Enter valid tags" })
     }
-  if (subcategory)
+ 
     if (!isValid(subcategory)) {
       return res.status(400).send({ status: false, msg: "Please Enter valid Subcategary" })
     }
-  if (publishedAt)
+
     if (!isValid(publishedAt)) {
       return res.status(400).send({ status: false, msg: "Please Enter valid publishedAt" })
     }
@@ -205,12 +206,16 @@ const deletedBlogByQueryParam = async function (req, res) {
   }
 
   const blog = await blogModel.findOne({ authorId: authorId, isDeleted: false })
-  if (!blog) {
+  if (blog) {
     return res.status(404).send({ status: false, mag: "Blog Not Found or already deleted" });
   }
-
-  let updatedData = await blogModel.updateMany(req.query, { isDeleted: true }, { new: true })
+ 
+  let updatedData = await blogModel.updateMany({ isDeleted: true }, { new: true })
+  if(updatedData){
+    return res.status(404).send({ status: false, mag: "Blog Not Found or already deleted" });
+  }
   return res.status(200).send({ status: true, data: updatedData })
+  
 }
 
 module.exports = { createBlog, getBlog, updateBlog, deleteBlogByPathParams, deletedBlogByQueryParam }
