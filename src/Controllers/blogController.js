@@ -130,7 +130,7 @@ const updateBlog = async function (req, res) {
     )
 
     if ((!findBlogId.isPublished) && updateBlog.isPublished) {
-      let timeStamp = new Date();
+      let timeStamp = moment(new Date()).format('DD/MM/YYYY  h:mma')
       let updateData = await blogModel.findOneAndUpdate(
         { _id: getBlogId },  //finding id 
         { publishedAt: timeStamp },
