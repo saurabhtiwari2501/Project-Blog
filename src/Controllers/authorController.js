@@ -27,7 +27,7 @@ const authors = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Please Provide Valid Name" })
         }
 
-// __________________________________TITLE_______________________________________________________
+// __________________________________TITLE VALIDATION_______________________________________________________
 
     if (!title) {
         return res.status(400).send({status : false , msg : "title is required"})
@@ -37,7 +37,7 @@ const authors = async function (req, res) {
     //checking if the title is valid
     if(!validTitle.includes(authorsData.title)) return res.status(400).send({ status: false, msg: "Title should be one of Mr, Mrs, Miss" });
 
-// ______________________________Email ______________________________________________
+// ______________________________Email VALIDATION______________________________________________
 
     if (!email) {
         return res.status(400).send({ status: false, msg: "PLEASE PROVIDE EMAIL" })
@@ -51,7 +51,7 @@ const authors = async function (req, res) {
         return res.status(400).send({ status: false, msg: "email address is already registered" })
     }
 
-    // ___________________________________password regex________________________________
+    // ___________________________________PASSWORD VALIDATION (regex)________________________________
 
     if (!password) {
         return res.status(400).send({status : false , msg : "please provide password"})

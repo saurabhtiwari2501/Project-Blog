@@ -49,7 +49,7 @@ const createBlog = async function (req, res) {
   }
 }
 
-// ________________________________GET BLOG_________________________________
+// ________________________________GET BLOG DATA USING QUERY PARAMS_________________________________
 
 const getBlog = async function (req, res) {
   try {
@@ -89,6 +89,9 @@ const getBlog = async function (req, res) {
   }
 
 }
+
+
+// ___________________________UPDATE BLOG DATA USING PATH PARAMS_________________________________________________
 
 const updateBlog = async function (req, res) {
   try {
@@ -168,7 +171,7 @@ const deleteBlogByPathParams = async function (req, res) {
   }
 }
 
-// ___________________________DELETE USING QUERY_________________________________________________
+// ___________________________DELETE USING QUERY PARAMS_________________________________________________
 
 const deletedBlogByQueryParam = async function (req, res) {
 
