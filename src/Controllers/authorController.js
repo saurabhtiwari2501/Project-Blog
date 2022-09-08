@@ -11,6 +11,8 @@ const isValid = function (value) {
     return true
 }
 
+// ________________________________CREATE AUTHORS_________________________________
+
 const authors = async function (req, res) {
     try {
         let authorsData = req.body
@@ -63,7 +65,7 @@ const authors = async function (req, res) {
         }
 
         let authorCreated = await authorModel.create(authorsData)
-        res.send({ data: authorCreated })
+        res.status(201).send({ data: authorCreated })
 
     }
     catch (err) {
@@ -71,11 +73,14 @@ const authors = async function (req, res) {
     }
 }
 
+// ________________________________LOGIN SYSTEM FOR AUTHOR_________________________________
+
 const authorLogin = async function (req, res) {
+    try{
     let { email, password } = req.body;
 
     let author = await authorModel.findOne({ email: email, password: password });
-    if (!author) return res.send({ status: false, msg: "username or the password is not corerct" });
+    if (!author) return res.status(400).send({ status: false, msg: "username or the password is not corerct" });
 
     let token = jwt.sign(
         {
@@ -86,8 +91,11 @@ const authorLogin = async function (req, res) {
         "Project1-Group45"
     );
     res.setHeader("x-auth-token", token);
-    res.send({ status: true, token: token });
-
+    res.status(200).send({ status: true, token: token });
+    }
+    catch (err) {
+        res.status(500).send({ status: false, Error: err.message });
+    }
 }
 
 module.exports.authorLogin = authorLogin
