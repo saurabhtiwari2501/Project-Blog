@@ -67,13 +67,13 @@ const getBlog = async function (req, res) {
     else if (!author) {
       return res.status(404).send({ status: false, msg: "author ID not found" })
     }
-    if (!category) {
+    if (!category || tags) {
       return res.status(400).send({ status: false, msg: "category not found" })
     }
-    if (!tags) {
-      return res.status(400).send({ status: false, msg: "tags not found" })
-    }
-    if (!subcategory) {
+    // if (!tags) {
+    //   return res.status(400).send({ status: false, msg: "tags not found" })
+    // }
+    if (!subcategory || category) {
       return res.status(400).send({ status: false, msg: "subcategory not found" })
     }
     let checkData = await blogModel.find({ isDeleted: false, isPublished: true })
