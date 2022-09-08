@@ -21,5 +21,3 @@ router.delete("/blogs/:blogId", middlewares.authentication, middlewares.authoriz
 router.delete("/blogs", middlewares.authentication, middlewares.authorization, blogController.deletedBlogByQueryParam)
 
 module.exports = router;
-
-

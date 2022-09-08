@@ -19,10 +19,12 @@ const isValid = function (value) {
 const createBlog = async function (req, res) {
   try {
     let data = req.body
+    
     if (!isValidreqbody(data)) {
       return res.status(400).send({ status: false, msg: "Please Provide Blog Datails" })
     }
     const { title, body, authorId, tags, category, subcategory } = req.body
+    let author = await authorModel.findById(authorId)
 
     if (!isValid(title) || !isValid(body)) {
       return res.status(400).send({ status: false, msg: "Please Enter Some data In title Or body" })
@@ -30,7 +32,7 @@ const createBlog = async function (req, res) {
     if (!isValidObjectId(authorId)) {
       return res.status(400).send({ status: false, msg: "Please Provide authorId" })
     }
-    if (!isValid(authorId)) {
+    if (!author) {
       return res.status(400).send({ status: false, msg: "Please Provide Valid authorId" })
     }
     if (!data.tags) {
@@ -57,7 +59,7 @@ const getBlog = async function (req, res) {
   try {
     let data = req.query
     const { category, authorId, tags, subcategory } = data
-    
+
     let author = await authorModel.findById(authorId)
     if (!authorId) {
       return res.status(400).send({ status: false, msg: "Please enter author ID " })
@@ -179,7 +181,7 @@ const deletedBlogByQueryParam = async function (req, res) {
     // let decodedToken = req.decodedToken;
 
     //validating the data for empty values
-    if (Object.keys(data).length == 0) return res.send({ status: false, msg: "Error!" });
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Error!" });
 
     if (data.hasOwnProperty('authorId')) { // authorId is present or not
       if (!isValidObjectId(data.authorId))
@@ -190,11 +192,10 @@ const deletedBlogByQueryParam = async function (req, res) {
 
 
       let { ...oldData } = data;
-      delete (oldData.authorId); 
+      delete (oldData.authorId);
     }
 
-    let timeStamps =  moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
-
+    let timeStamps = moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
 
     let getBlogData = await blogModel.find({ authorId: decodedToken.authorId, data });
 
@@ -210,10 +211,10 @@ const deletedBlogByQueryParam = async function (req, res) {
     }
 
     data.authorId = decodedToken.authorId;
-   
-    let updatedData= await blogModel.updateMany({authorId: data.authorId}, {$set : {isDeleted : true , deletedAt : Date.now()}}, {new : true})
-    return res.status(200).send({ status:true, data:updatedData})
-   
+
+    let updatedData = await blogModel.updateMany({ authorId: data.authorId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
+    return res.status(200).send({ status: true, data: updatedData })
+
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });
   }
