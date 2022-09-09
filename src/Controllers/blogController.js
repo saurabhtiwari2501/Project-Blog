@@ -163,20 +163,15 @@ const deleteBlogByPathParams = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No such user exists" });
     }
 
-    let token = req.headers["x-api-key"];
-    let decodedToken = jwt.verify(token, "Project1-Group45")
-
-    if (decodedToken.authorId !== blog.authorId.toString())
-      return res.status(401).send({ status: false, msg: "User logged is not allowed to delete the requested blogs data" })
-
     //check isDeleted satus is true
-    if (blog.isDeleted) {
+    if (blog.isDeleted == true) {
       return res.status(400).send({ status: false, msg: "Blog is already Delete" });
     }
 
     //update the status of Isdeleted to true
     let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true }, { new: true })
-    return res.status(200).send({ status: true, data: updatedData });
+    return res.status(200).send({ status: true, msg: "Successfully Deleted!!" });
+
   }
   catch (err) {
     res.status(500).send({ status: false, Error: err.message })
@@ -200,7 +195,6 @@ const deletedBlogByQueryParam = async function (req, res) {
 
       if (decodedToken.authorId !== data.authorId)
         return res.status(403).send({ status: false, msg: "Action not allow" })
-
 
       let { ...oldData } = data;
       delete (oldData.authorId);
