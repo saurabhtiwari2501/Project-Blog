@@ -19,7 +19,7 @@ const isValid = function (value) {
 const createBlog = async function (req, res) {
   try {
     let data = req.body
-    
+
     if (!isValidreqbody(data)) {
       return res.status(400).send({ status: false, msg: "Please Provide Blog Datails" })
     }
@@ -57,39 +57,44 @@ const createBlog = async function (req, res) {
 
 const getBlog = async function (req, res) {
   try {
-    let data = req.query
-    const { category, authorId, tags, subcategory } = data
 
-    let author = await authorModel.findById(authorId)
-    if (!authorId) {
-      return res.status(400).send({ status: false, msg: "Please enter author ID " })
+    let { ...data } = req.query
+    // check whether the authorId is present or not 
+    if (data.hasOwnProperty('authorId')) {
+      let { ...deleteData } = data;
+      delete (deleteData.authorId);
     }
-    else if (!author) {
-      return res.status(404).send({ status: false, msg: "author ID not found" })
-    }
-    if (!category || tags) {
-      return res.status(400).send({ status: false, msg: "category not found" })
-    }
-    // if (!tags) {
-    //   return res.status(400).send({ status: false, msg: "tags not found" })
-    // }
-    if (!subcategory || category) {
-      return res.status(400).send({ status: false, msg: "subcategory not found" })
-    }
-    let checkData = await blogModel.find({ isDeleted: false, isPublished: true })
 
-    let user = await blogModel.find({ authorId: data.authorId })
-
-    if (!user) {
-      return res.status(404).send({ status: false, msg: "data not found!!" })
+    //finding the data for empty values 
+    if (Object.keys(data).length == 0) {
+      return res.status(400).send({ status: false, msg: "Please Provide data for filter!!" });
     }
-    res.status(200).send({ status: true, data: checkData })
+
+    let getAllBlogs = await blogModel.find({ isDeleted: false, isPublished: true }).populate('authorId');
+
+    //check that the getAllBlogs is empty or not
+
+    if (getAllBlogs.length == 0) {
+      return res.status(404).send({ status: false, msg: "No such blog 788787" });
+    }
+
+    data.isDeleted = false;
+    data.isPublished = true;
+
+    // data  are not deleted and are published 
+
+    let getBlogs = await blogModel.find(data).populate('authorId');
+
+    // getBlogs is empty or not
+
+    if (getBlogs.length == 0)
+      return res.status(404).send({ status: false, msg: "No such blog exist" });
+    res.status(200).send({ status: true, data: getBlogs })
+
+  } catch (err) {
+    res.status(500).send({ status: false, error: err.message });
   }
-  catch (err) {
-    res.status(500).send({ status: false, Error: err.message })
-  }
-}
-
+};
 
 // ___________________________UPDATE BLOG DATA USING PATH PARAMS_________________________________________________
 
@@ -108,7 +113,7 @@ const updateBlog = async function (req, res) {
 
     // //finding the data is delted or not
     if (findBlogId.isDeleted)
-      return res.status(404).send({ status: findBlogId, msg: "No blog founds or has been already deleted" });
+      return res.status(404).send({ status: false, msg: "No blog founds or has been already deleted" });
 
     let { ...data } = req.body;
 
@@ -158,10 +163,17 @@ const deleteBlogByPathParams = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No such user exists" });
     }
 
+    let token = req.headers["x-api-key"];
+    let decodedToken = jwt.verify(token, "Project1-Group45")
+
+    if (decodedToken.authorId !== blog.authorId.toString())
+      return res.status(401).send({ status: false, msg: "User logged is not allowed to delete the requested blogs data" })
+
     //check isDeleted satus is true
     if (blog.isDeleted) {
       return res.status(400).send({ status: false, msg: "Blog is already Delete" });
     }
+
     //update the status of Isdeleted to true
     let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true }, { new: true })
     return res.status(200).send({ status: true, data: updatedData });
@@ -178,10 +190,9 @@ const deletedBlogByQueryParam = async function (req, res) {
     let { ...data } = req.query;
     let token = req.headers["x-api-key"];
     let decodedToken = jwt.verify(token, "Project1-Group45");
-    // let decodedToken = req.decodedToken;
 
     //validating the data for empty values
-    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Error!" });
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide data for filter!!" });
 
     if (data.hasOwnProperty('authorId')) { // authorId is present or not
       if (!isValidObjectId(data.authorId))

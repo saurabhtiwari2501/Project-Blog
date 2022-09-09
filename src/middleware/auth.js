@@ -33,19 +33,43 @@ const authentication = async function (req, res, next) {
 
 const authorization = async function (req, res, next) {
     try {
+        let token = req.headers["x-api-key"]; //uthaying token from header
+        token = req.headers["x-api-key"];
+        let decodedToken = jwt.verify(token, "Project1-Group45"); //verify token with secret key 
+        let loginInUser = decodedToken.authorId; //log in by token
+        let authorLogin = req.query.authorId;
 
-        let newToken = req.decodedToken
-        let login = req.params.authorId
+        if (!authorLogin)
+            return res.status(400).send({ status: false, msg: "Author id is required" })  // author id is not present in params
 
-        if (newToken != login) {
-            return res.status(400).send({ status: false, msg: "acesses deny" })
+        if (req.body.hasOwnProperty('authorId')); //it is finding that auther is present in data or not
+
+        if (!isValidObjectId(req.query.authorId))
+            return res.status(400).send({ status: false, msg: "valid auther id likho" })
+
+
+        if (req.params.hasOwnProperty('blogId')) { //blogId is present in request params
+
+            //checking whether the blogId is valid or not
+            if (!isValidObjectId(req.params.blogId))
+                return res.status(400).send({ status: false, msg: "Enter a valid blog Id" })
+
+            let blogData = await blogModel.findById(req.params.blogId);
+
+            if (!blogData)
+                return res.status(404).send({ status: false, msg: "Error, Please check Id and try again" });
+
         }
+
+        if (loginInUser !== authorLogin)
+            return res.status(400).send({ status: false, msg: "Error failed" })  //if login user is not author of that blog
 
         next(); //if auther is same then go to your page
 
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message });
     }
+
 }
 
 module.exports = { authentication, authorization }

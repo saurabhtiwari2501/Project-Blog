@@ -2,7 +2,7 @@ const express=require("express")
 const router=express.Router();
 const authorController=require("../Controllers/authorController")
 const blogController=require("../Controllers/blogController")
-const middlewares = require("../middleware/mid")
+const middlewares = require("../middleware/auth")
 
 // ________________________________Author Api_________________________________
 router.post("/authors", authorController.authors)
