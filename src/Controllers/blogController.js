@@ -15,7 +15,7 @@ const isValid = function (value) {
   if (typeof value === "string" && value.trim().length === 0) return false
   return true
 }
-// _____________________________POST BLOG__________________________
+// _____________________________CREATE BLOG__________________________
 const createBlog = async function (req, res) {
   try {
     let data = req.body
