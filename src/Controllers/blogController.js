@@ -112,7 +112,7 @@ const updateBlog = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No blog exists" });
 
     // //finding the data is delted or not
-    if (findBlogId.isDeleted)
+    if (findBlogId.isDeleted == true)
       return res.status(404).send({ status: false, msg: "No blog founds or has been already deleted" });
 
     let { ...data } = req.body;
@@ -121,35 +121,77 @@ const updateBlog = async function (req, res) {
     if (Object.keys(data).length == 0)
       return res.status(400).send({ status: false, msg: "data is requierd to update" });
 
-    //update the blog data in data base by blog id
+    //     //update the blog data in data base by blog id
 
-    let updateBlog = await blogModel.findByIdAndUpdate(
-      { _id: getBlogId },
-      {
-        $push: { tags: data.tags, category: data.category, subcategory: data.subcategory },
-        title: data.title,
-        body: data.body,
-        isPublished: data.isPublished
-      },
-      { new: true }
-    )
+    let updatedBlog = await blogModel.findOneAndUpdate({ $and: [{ isDeleted: false }, { _id: getBlogId },] }, {
+      $push: { tags: data.tags, category: data.category, subcategory: data.subcategory },
+      title: data.title,
+      body: data.body,
+      isPublished: data.isPublished
+      , publishedAt: moment(new Date()).format('DD/MM/YYYY h:mma')
+    }, { new: true, upsert: true })
 
-    if ((!findBlogId.isPublished) && updateBlog.isPublished) {
-      let timeStamp = moment(new Date()).format('DD/MM/YYYY  h:mma')
-      let updateData = await blogModel.findOneAndUpdate(
-        { _id: getBlogId },  //finding id 
-        { publishedAt: timeStamp },
-        { new: true }
+    return res.status(200).send({ status: true, data: updatedBlog })
 
-      )
-      return res.status(200).send({ statusbar: true, data: updateData });
-    }
-
-    res.status(200).send({ status: true, data: updateBlog });
   } catch (err) {
     res.status(500).send({ status: false, Error: err.message });
   }
 };
+
+// const updateBlog = async function (req, res) {
+//   try {
+//     let blogId = req.params.blogId;
+//     let data = req.body;
+
+//     // if(!blogId)
+//     // body can not be empty
+//     if (Object.keys(data).length == 0)
+//       return res.status(400).send({
+//         status: false,
+//         msg: "Body is required",
+//       });
+
+//     let blogData = await blogModel.findOne({
+//       _id: blogId,
+//       isDeleted: false,
+//     });
+
+//     if (!blogData)
+//       return res.status(404).send({
+//         status: false,
+//         msg: "blogs-Id not found",
+//       });
+
+//     if (data.title) blogData.title = data.title;
+//     if (data.body) blogData.body = data.body;
+//     if (data.category) blogData.category = data.category;
+
+//     if (data.tags) {
+//       if (typeof data.tags == "object") {
+//         blogData.tags.push(...data.tags);
+//       } else {
+//         blogData.tags.push(data.tags);
+//       }
+//     }
+//     if (data.subcategory) {
+//       if (typeof data.subcategory == "object") {
+//         blogData.subcategory.push(...data.subcategory);
+//       } else {
+//         blogData.subcategory.push(data.subcategory);
+//       }
+//     }
+//     blogData.publishedAt = Date(); //Fri Apr 29 2022 11:14:26 GMT+0530 (India Standard Time)
+//     blogData.isPublished = true;
+//     blogData.save();
+
+//     res.status(200).send({ status: true, data: blogData });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).send({ status: false, msg: error.message });
+//   }
+// };
+
+
 
 // ________________________________DELETE BLOG USING PATH PARAMS_________________________________
 
@@ -183,8 +225,8 @@ const deleteBlogByPathParams = async function (req, res) {
 const deletedBlogByQueryParam = async function (req, res) {
   try {
     let { ...data } = req.query;
-    let token = req.headers["x-api-key"];
-    let decodedToken = jwt.verify(token, "Project1-Group45");
+    // let token = req.headers["x-api-key"];
+    // let decodedToken = jwt.verify(token, "Project1-Group45");
 
     //validating the data for empty values
     if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide data for filter!!" });
@@ -193,31 +235,31 @@ const deletedBlogByQueryParam = async function (req, res) {
       if (!isValidObjectId(data.authorId))
         return res.status(400).send({ status: false, msg: "Enter a valid author Id" });
 
-      if (decodedToken.authorId !== data.authorId)
-        return res.status(403).send({ status: false, msg: "Action not allow" })
+      // if (decodedToken.authorId !== data.authorId)
+      //   return res.status(403).send({ status: false, msg: "Action not allow" })
 
       let { ...oldData } = data;
       delete (oldData.authorId);
     }
 
-    let timeStamps = moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
+   // let timeStamps = moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
 
-    let getBlogData = await blogModel.find({ authorId: decodedToken.authorId, data });
+    let getBlogData = await blogModel.find({ data });
 
     //blog doesnt match with  query data
     if (getBlogData.length == 0) {
       return res.status(404).send({ status: false, msg: "No blog found" });
-    }
+    } 
 
-    const getNotDeletedBlog = getBlogData.filter(item => item.isDeleted === false);
+    const getNotDeletedBlog = getBlogData.filter(item => item.isDeleted === true);
 
     if (getNotDeletedBlog.length == 0) {
       return res.status(404).send({ status: false, msg: "The Blog is already deleted" });
     }
 
-    data.authorId = decodedToken.authorId;
+   // data.authorId = decodedToken.authorId;
 
-    let updatedData = await blogModel.updateMany({ authorId: data.authorId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
+    let updatedData = await blogModel.updateMany( { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
     return res.status(200).send({ status: true, data: updatedData })
 
   } catch (err) {
