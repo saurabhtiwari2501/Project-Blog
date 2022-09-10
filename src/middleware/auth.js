@@ -37,16 +37,15 @@ const authorization = async function (req, res, next) {
         token = req.headers["x-api-key"];
         let decodedToken = jwt.verify(token, "Project1-Group45"); //verify token with secret key 
         let loginInUser = decodedToken.authorId; //log in by token
-        console.log(decodedToken)
-       
         let blogId = req.params.blogId
-        console.log(blogId)
-        let checkBlogId = await blogModel.findOne({ _id: blogId })
-        console.log(checkBlogId)
+        
+        let checkBlogId = await blogModel.findById({ _id: blogId })
+        if (!checkBlogId)
+        return res.status(404).send({ status: false, msg: "No blog exists, Enter a valid Object Id" });
+        
         if (checkBlogId.authorId != loginInUser) {
             return res.status(403).send({ status: false, msg: "Authorization failed" })
         }
-
         next(); //if auther is same then go to your page
 
     } catch (err) {

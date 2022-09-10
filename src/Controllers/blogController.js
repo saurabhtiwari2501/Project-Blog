@@ -160,9 +160,7 @@ const deleteBlogByPathParams = async function (req, res) {
     let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true, isPublished: false, deletedAt: moment(new Date()).format('DD/MM/YYYY h:mma') })
     console.log(updatedData)
     return res.status(200).send({ status: true, msg: "Successfully Deleted!!" });
-
   }
-
   catch (err) {
     res.status(500).send({ status: false, Error: err.message })
   }
