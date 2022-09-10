@@ -112,8 +112,8 @@ const updateBlog = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No blog exists" });
 
     // //finding the data is delted or not
-    if (findBlogId.isDeleted)
-      return res.status(404).send({ status: false, msg: "No blog founds or has been already deleted" });
+    if (findBlogId.isDeleted == true)
+      return res.status(404).send({ status: false, msg: "This blog has been deleted, Try another!!" });
 
     let { ...data } = req.body;
 
@@ -123,29 +123,16 @@ const updateBlog = async function (req, res) {
 
     //update the blog data in data base by blog id
 
-    let updateBlog = await blogModel.findByIdAndUpdate(
-      { _id: getBlogId },
-      {
-        $push: { tags: data.tags, category: data.category, subcategory: data.subcategory },
-        title: data.title,
-        body: data.body,
-        isPublished: data.isPublished
-      },
-      { new: true }
-    )
+    let updatedBlog = await blogModel.findOneAndUpdate({ $and: [{ isDeleted: false }, { _id: getBlogId },] }, {
+      $push: { tags: data.tags, category: data.category, subcategory: data.subcategory },
+      title: data.title,
+      body: data.body,
+      isPublished: data.isPublished
+      , publishedAt: moment(new Date()).format('DD/MM/YYYY h:mma')
+    }, { new: true, upsert: true })
 
-    if ((!findBlogId.isPublished) && updateBlog.isPublished) {
-      let timeStamp = moment(new Date()).format('DD/MM/YYYY  h:mma')
-      let updateData = await blogModel.findOneAndUpdate(
-        { _id: getBlogId },  //finding id 
-        { publishedAt: timeStamp },
-        { new: true }
+    return res.status(200).send({ status: true, data: updatedBlog })
 
-      )
-      return res.status(200).send({ statusbar: true, data: updateData });
-    }
-
-    res.status(200).send({ status: true, data: updateBlog });
   } catch (err) {
     res.status(500).send({ status: false, Error: err.message });
   }
@@ -163,16 +150,19 @@ const deleteBlogByPathParams = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No such user exists" });
     }
 
-    //check isDeleted satus is true
+    //check isDeleted status is true
     if (blog.isDeleted == true) {
-      return res.status(400).send({ status: false, msg: "Blog is already Delete" });
+      return res.status(400).send({ status: false, msg: "Blog is already Deleted" });
     }
 
+    // let timeStamp = new Date()
     //update the status of Isdeleted to true
-    let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true }, { new: true })
+    let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true, isPublished: false, deletedAt: moment(new Date()).format('DD/MM/YYYY h:mma') })
+    console.log(updatedData)
     return res.status(200).send({ status: true, msg: "Successfully Deleted!!" });
 
   }
+
   catch (err) {
     res.status(500).send({ status: false, Error: err.message })
   }
@@ -187,7 +177,7 @@ const deletedBlogByQueryParam = async function (req, res) {
     let decodedToken = jwt.verify(token, "Project1-Group45");
 
     //validating the data for empty values
-    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide data for filter!!" });
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide filter for performing deletion!!" });
 
     if (data.hasOwnProperty('authorId')) { // authorId is present or not
       if (!isValidObjectId(data.authorId))
