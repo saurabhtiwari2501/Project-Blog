@@ -114,9 +114,9 @@ const updateBlog = async function (req, res) {
     // //finding the data is delted or not
     if (findBlogId.isDeleted == true)
       return res.status(404).send({ status: false, msg: "No blog founds or has been already deleted" });
-=======
+
       return res.status(404).send({ status: false, msg: "This blog has been deleted, Try another!!" });
->>>>>>> afe365ee9d8bb1a9cd494696ff55ad0c34141844
+
 
     let { ...data } = req.body;
 
