@@ -114,6 +114,9 @@ const updateBlog = async function (req, res) {
     // //finding the data is delted or not
     if (findBlogId.isDeleted == true)
       return res.status(404).send({ status: false, msg: "No blog founds or has been already deleted" });
+=======
+      return res.status(404).send({ status: false, msg: "This blog has been deleted, Try another!!" });
+>>>>>>> afe365ee9d8bb1a9cd494696ff55ad0c34141844
 
     let { ...data } = req.body;
 
@@ -205,16 +208,19 @@ const deleteBlogByPathParams = async function (req, res) {
       return res.status(404).send({ status: false, msg: "No such user exists" });
     }
 
-    //check isDeleted satus is true
+    //check isDeleted status is true
     if (blog.isDeleted == true) {
-      return res.status(400).send({ status: false, msg: "Blog is already Delete" });
+      return res.status(400).send({ status: false, msg: "Blog is already Deleted" });
     }
 
+    // let timeStamp = new Date()
     //update the status of Isdeleted to true
-    let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true }, { new: true })
+    let updatedData = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true, isPublished: false, deletedAt: moment(new Date()).format('DD/MM/YYYY h:mma') })
+    console.log(updatedData)
     return res.status(200).send({ status: true, msg: "Successfully Deleted!!" });
 
   }
+
   catch (err) {
     res.status(500).send({ status: false, Error: err.message })
   }
@@ -229,7 +235,7 @@ const deletedBlogByQueryParam = async function (req, res) {
     // let decodedToken = jwt.verify(token, "Project1-Group45");
 
     //validating the data for empty values
-    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide data for filter!!" });
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Please Provide filter for performing deletion!!" });
 
     if (data.hasOwnProperty('authorId')) { // authorId is present or not
       if (!isValidObjectId(data.authorId))

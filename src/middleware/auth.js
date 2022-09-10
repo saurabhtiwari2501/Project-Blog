@@ -38,24 +38,13 @@ const authorization = async function (req, res, next) {
         let decodedToken = jwt.verify(token, "Project1-Group45"); //verify token with secret key 
         let loginInUser = decodedToken.authorId; //log in by token
         console.log(decodedToken)
-        let authorLogin = req.query.authorId;
+       
         let blogId = req.params.blogId
         console.log(blogId)
-        let checkBlogId = await blogModel.findOne({ _id: blogId, isDeleted: false })
+        let checkBlogId = await blogModel.findOne({ _id: blogId })
         console.log(checkBlogId)
         if (checkBlogId.authorId != loginInUser) {
             return res.status(403).send({ status: false, msg: "Authorization failed" })
-        }
-
-        //checking whether the blogId is valid or not
-        if (!isValidObjectId(req.params.blogId)) {
-            return res.status(400).send({ status: false, msg: "Enter a valid blog Id" })
-
-            let blogData = await blogModel.findById(req.params.blogId);
-
-            if (!blogData)
-                return res.status(404).send({ status: false, msg: "Error, Please check Id and try again" });
-
         }
 
         next(); //if auther is same then go to your page
