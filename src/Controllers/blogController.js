@@ -188,7 +188,7 @@ const deletedBlogByQueryParam = async function (req, res) {
       delete (oldData.authorId);
     }
 
-    let timeStamps = moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
+    // let timeStamps = moment(new Date()).format('DD/MM/YYYY  h:mma') //getting the current timeStamps
 
     let getBlogData = await blogModel.find({ authorId: decodedToken.authorId, data });
 
