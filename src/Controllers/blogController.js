@@ -33,7 +33,7 @@ const createBlog = async function (req, res) {
       return res.status(400).send({ status: false, msg: "Please Provide authorId" })
     }
     if (!author) {
-      return res.status(404).send({ status: false, msg: "Please Provide Valid authorId" })
+      return res.status(400).send({ status: false, msg: "Please Provide Valid authorId" })
     }
     if (!data.tags) {
       return res.status(400).send({ status: false, msg: "Please Provide tags to the blog" })

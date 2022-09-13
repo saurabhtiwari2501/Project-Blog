@@ -51,7 +51,7 @@ const authors = async function (req, res) {
 
         let uniqueEmail = await authorModel.findOne({ email: email })
         if (uniqueEmail) {
-            return res.status(400).send({ status: false, msg: "email address is already registered" })
+            return res.status(403).send({ status: false, msg: "email address is already registered" })
         }
 
         // ___________________________________PASSWORD VALIDATION (regex)________________________________
@@ -91,7 +91,7 @@ const authorLogin = async function (req, res) {
         }
 
         let author = await authorModel.findOne({ email: email, password: password });
-        if (!author) return res.status(400).send({ status: false, msg: "username or the password is not corerct" });
+        if (!author) return res.status(401).send({ status: false, msg: "username or the password is not corerct" });
 
         let token = jwt.sign(
             {
