@@ -1,9 +1,6 @@
 const jwt = require("jsonwebtoken");
-const authorModel = require("../models/authorModel");
 const blogModel = require("../models/blogModel");
 const mongoose = require('mongoose')
-
-const isValidObjectId = function (ObjectId) { return mongoose.Types.ObjectId.isValid(ObjectId) }
 
 // ________________________________MIDDLEWARE FOR AUTHENTICATION_________________________________
 
@@ -33,7 +30,7 @@ const authentication = async function (req, res, next) {
 
 const authorization = async function (req, res, next) {
     try {
-        let token = req.headers["x-api-key"]; //uthaying token from header
+        let token = req.headers["x-api-key"]; 
         token = req.headers["x-api-key"];
         let decodedToken = jwt.verify(token, "Project1-Group45"); //verify token with secret key 
         let loginInUser = decodedToken.authorId; //log in by token

@@ -76,22 +76,33 @@ const authors = async function (req, res) {
 // ________________________________LOGIN SYSTEM FOR AUTHOR_________________________________
 
 const authorLogin = async function (req, res) {
-    try{
-    let { email, password } = req.body;
+    try {
+        let data = req.body;
+        if (!isValidreqbody(data)) {
+            return res.status(400).send({ statua: false, msg: "Please provide login details!!" })
+        }
 
-    let author = await authorModel.findOne({ email: email, password: password });
-    if (!author) return res.status(400).send({ status: false, msg: "username or the password is not corerct" });
+        const { email, password } = data
+        if (!isValid(email)) {
+            return res.status(400).send({ status: false, msg: "Email is required!!" })
+        }
+        if (!isValid(password)) {
+            return res.status(400).send({ status: false, msg: "Password is required!!" })
+        }
 
-    let token = jwt.sign(
-        {
-            authorId: author._id.toString(),
-            batch: "plutonium",
-            organisation: "FunctionUp",
-        },
-        "Project1-Group45"
-    );
-    res.setHeader("x-auth-token", token);
-    res.status(200).send({ status: true, token: token });
+        let author = await authorModel.findOne({ email: email, password: password });
+        if (!author) return res.status(400).send({ status: false, msg: "username or the password is not corerct" });
+
+        let token = jwt.sign(
+            {
+                authorId: author._id.toString(),
+                batch: "plutonium",
+                organisation: "FunctionUp",
+            },
+            "Project1-Group45"
+        );
+        res.setHeader("x-auth-token", token);
+        res.status(200).send({ status: true, token: token });
     }
     catch (err) {
         res.status(500).send({ status: false, Error: err.message });
